@@ -3,7 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <title>LED Control</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #02374a 0%, #2b91e4 100%);
+      color: white;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 20px 40px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .on-btn {
+      background-color: #00e676;
+      color: #000;
+    }
+
+    .off-btn {
+      background-color: #ff1744;
+      color: #fff;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    #status-text {
+      font-size: 20px;
+      background-color: rgba(0,0,0,0.2);
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -18,6 +80,20 @@
   </div>
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const client = mqtt.connect('wss://test.mosquitto.org:8081');
+    const statusText = document.getElementById('status-text');
+
+    client.on('connect', () => {
+      console.log("Connected to MQTT broker");
+      statusText.innerHTML = "Status: <strong>Connected to MQTT broker</strong>";
+    });
+
+    function sendCommand(state) {
+      client.publish("led/control", state);
+      statusText.innerHTML = `Status: <strong>LED is ${state}</strong>`;
+      console.log("Sent:", state);
+    }
+  </script>
 </body>
 </html>
